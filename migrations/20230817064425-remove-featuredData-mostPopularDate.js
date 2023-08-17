@@ -3,20 +3,29 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.removeColumn('media', 'featuredDate');
-    await queryInterface.removeColumn('media', 'mostPopularDate');
+    return queryInterface.sequelize.transaction(t => {
+      return Promise.all([
+        queryInterface.removeColumn('media', 'featuredDate', { transaction: t }),
+        queryInterface.removeColumn('media', 'mostPopularDate', { transaction: t })
+      ])
+    });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.addColumn(
-      'media',
-      'featuredDate',
-      Sequelize.DataTypes.DATE,
-    );
-    await queryInterface.addColumn(
-      'media',
-      'mostPopularDate',
-      Sequelize.DataTypes.DATE,
-    );
+    return queryInterface.sequelize.transaction(t => {
+      return Promise.all([
+        queryInterface.addColumn(
+          'media',
+          'featuredDate',
+          Sequelize.DataTypes.DATE,
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'media',
+          'mostPopularDate',
+          Sequelize.DataTypes.DATE, { transaction: t }
+        ),
+      ])
+    });
   },
 };
